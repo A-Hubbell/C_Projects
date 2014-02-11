@@ -51,3 +51,6 @@ for (int i=0; i<height; i++)
 
 }
 
+
+// check50 2014/x/pset1/mario mario.c
+

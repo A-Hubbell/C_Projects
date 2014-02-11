@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <cs50.h>
+#include <math.h>
 
 // check50 2014/x/pset1/greedy greedy.c
 
@@ -9,26 +10,25 @@ int main(void)
 {
 
 //Variable declarations
-//int change_d=0;
-int change_c=0;
+float change_c=0.0;
 int num_coin=0;
 
-//Prompt user for input in dollars
-//printf("Please enter the amount of change owed (in dollars): ");
-//change_c=GetFloat()*100; // convert to cents
+//Prompt user and convert from dollars to cents
 
-//Convert to cents
-//change_c=change_d*100;
 do
 {
 printf("Change owed (in dollars): ");
-change_c=GetFloat();
-change_c=change_c*100;
-
+change_c=GetFloat()*100;
 }
 while(change_c<0);
 
 
+//Round the number of cents 
+change_c=floorf(change_c*100+0.5)/100;
+
+
+//Loop through different coin denominations, moving from largest to smallest, subtracting the denomination amount each time
+//and adding one to the number of coins required
 while(change_c>0)
     {
 
@@ -38,7 +38,7 @@ while(change_c>0)
         change_c-=25;
         }
     else
-    {
+        {   
         if(change_c>=10)
             {
             num_coin++;
@@ -55,25 +55,16 @@ while(change_c>0)
                               
                 else
                     {
-                        if(change_c>=1)
+                       if(change_c>=1)
                             {
                             num_coin++;
                             change_c-=1;
-                            }
-                            
-                        else
-                        {
-                        
-                        }        
+                            }     
                     }                   
-
-
-
-
             }
     }
 }
 
-//printf("Your change is: %d quarters, %d dimes, %d nickels and %d pennies\n", num_quarter, num_dime, num_nickel, num_penny);
+//Output the final result (number of coins required)
 printf("%d\n", num_coin);
 }
