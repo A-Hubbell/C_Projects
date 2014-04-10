@@ -22,7 +22,6 @@ int main(int argc, string argv[])
 {
 
 //Variable declarations
-// cipher_key = 0;
 int ascii_int_text[]={}; 
 string plain_text = "";
 
@@ -37,11 +36,10 @@ return 1;
 
 cipher_key = atoi(argv[1]);
 
-//Comment below line
-printf("%i\n", cipher_key);
+
+//printf("Please enter your plain text to be encrypted. \n");
 
 
-printf("Please enter your plain text to be encrypted. \n");
 
 plain_text=GetString();
 
@@ -50,62 +48,40 @@ plain_text=GetString();
 
 for(int i = 0; i<(strlen(plain_text));i++)
 {
-      
-     printf("YOU SHOULD SEE THIS %i   CKEY: %i\n", i, cipher_key);
-     if(isupper(plain_text[i]))
-     {
 
-        printf("Letter: %c\n", plain_text[i]);
-        printf("Cipher Key BEFORE: %i ASCII text BEFORE %i\n", cipher_key, ascii_int_text[i]);
-        ascii_int_text[i] = plain_text[i];    ////////////////THIS IS THE PROBLEM LINE!!
-        printf("Cipher Key AFTER: %i ASCII text AFTER %i\n", cipher_key, ascii_int_text[i]);
-        ascii_int_text[i] = (ascii_int_text[i])-64;
-        printf("CKEY: %i\n", cipher_key);
-        printf("1-26 alphabet: %i\n", ascii_int_text[i]);
-        
-        
-        //ascii_int_text[i] = (((ascii_int_text[i])+(cipher_key))%26);
-    //    printf("Cipher Key BEFORE: %i text BEFORE %i\n", cipher_key, ascii_int_text[i]);
-        ascii_int_text[i] = (ascii_int_text[i]+cipher_key);
-     //   ascii_int_text[i] = ((ascii_int_text[i])+1);
-    //    printf("Cipher Key AFTER: %i\n", cipher_key); 
-    //   ascii_int_text[i]= ascii_int_text[i]+cipher_key;
-       printf("SUM: %i\n", ascii_int_text[i]);
-   //    ascii_int_text[i]= ((ascii_int_text[i])%26);
-     //  printf("ASCII: %i\n", ascii_int_text[i]);
-        
-        ascii_int_text[i] = (ascii_int_text[i])+64;
-        plain_text[i]=ascii_int_text[i];
-     }
-
-//only executes if the text is upper case
-     if(islower(plain_text[i]))
+     if(isalpha(plain_text[i]))
      { 
-        printf("THIS SHOULD NOT SHOW UP\n");
+        if(islower(plain_text[i]))
+        {
+        
         ascii_int_text[i] = plain_text[i];
-        ascii_int_text[i] = ascii_int_text[i]-96;
-      //  ascii_int_text[i] = (ascii_int_text[i]+cipher_key)%26;
-        ascii_int_text[i] = ascii_int_text[i]+96;
+        ascii_int_text[i] -= 96;
+        ascii_int_text[i] = (ascii_int_text[i]+cipher_key);
+        ascii_int_text[i] = ascii_int_text[i]%26;
+        ascii_int_text[i] += 96;
         plain_text[i] = ascii_int_text[i];
+        
+        }
+        
+        
+        if(isupper(plain_text[i]))
+        {
+        
+        ascii_int_text[i] = plain_text[i];
+        ascii_int_text[i] -= 64;
+        ascii_int_text[i] = (ascii_int_text[i]+cipher_key);
+        ascii_int_text[i] = ascii_int_text[i]%26;
+        ascii_int_text[i] += 64;
+        plain_text[i] = ascii_int_text[i];
+        
+        }
+    
      }
     
-     else
-     {
-     }
-     printf("THE END CKEY: %i\n", cipher_key);
 }
   
-//printf("%s\n", plain_text);
-
-  
-
-
-
-//char alphabet[]={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v'};
-//Cool functions: isalpha(' '), isupper(' '), islower(' ')
-
-
-
+printf("%s\n", plain_text);
+return 0;
 
 }
 

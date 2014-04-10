@@ -21,17 +21,18 @@
 
 int main(int argc, string argv[])
 {
-    // TODO: comment me
+    // Check to make sure the user input either 1 or 2 arguments when the program was run, otherwise print help message
     if (argc != 2 && argc != 3)
     {
         printf("Usage: ./generate n [s]\n");
         return 1;
     }
 
-    // TODO: comment me
+    // Change the variable type of the input(s) from string to int
     int n = atoi(argv[1]);
 
-    // TODO: comment me
+    // If two arguments are given, use the second as the input to the seed function. 
+    // Otherwise there is nothing given to the seed function.
     if (argc == 3)
     {
         srand((unsigned int) atoi(argv[2]));
@@ -41,7 +42,7 @@ int main(int argc, string argv[])
         srand((unsigned int) time(NULL));
     }
 
-    // TODO: comment me
+    //  Print the output of the  random number function to the screen as many times as specified by the user's first argument
     for (int i = 0; i < n; i++)
     {
         printf("%i\n", rand() % LIMIT);
