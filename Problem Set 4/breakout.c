@@ -29,7 +29,7 @@
 // Brick properties
 #define ROWS 5
 #define COLS 10
-#define BRSPACING 8
+#define BRSPACING 6
 
 //Brick width information calculated from pixels and cols/rows
 #define brickHeight 4
@@ -84,11 +84,17 @@ int main(void)
     // number of points initially
     int points = 0;
 
+    updateScoreboard(window, label, points);
+    pause(5000);
+
+
     // keep playing until game over
     while (lives > 0 && bricks > 0)
     {
-        // TODO
-        
+        //Update scoreboard, this line doesn't seem to be working or is overwritten almost instantaneously
+        updateScoreboard(window, label, points);
+        pause(200);
+       
         if(counter==0)
         {
             move(ball, 3+drand48(), 3+drand48());
@@ -100,11 +106,8 @@ int main(void)
             pause(20);
         }
 
- 
-        
         GEvent event = getNextEvent(MOUSE_EVENT);
-        
-              
+                    
         //Position the paddle along the x coordinate of the mouse
         if (event != NULL)
         {
@@ -120,15 +123,27 @@ int main(void)
             continue;
         }
         
-        //Top-bottom wall bouncing works!
-        if((getY(ball)+RADIUS)>=HEIGHT || (getY(ball)-RADIUS)<=0)
+        //If ball hits top of screen, bounce off
+        if((getY(ball)-RADIUS)<=0)
         {
             velY = -velY;
             counter++;
             continue;
         }
-        
-        
+
+        //If ball goes past the paddle, stop it at the bottom of the screen, subtract a life, remove old ball and re-initialize
+        if((getY(ball)+RADIUS)>=HEIGHT)
+        {
+            lives -= 1;
+            pause(2000);
+            waitForClick();
+            removeGWindow(window, ball);
+            ball = initBall(window);
+            pause(2000);
+            counter = 0;
+            continue;
+        }       
+
         //Detect if ball touches a brick, remove said brick and bounce ball off
         GObject object = detectCollision(window, ball);
         
@@ -136,24 +151,16 @@ int main(void)
         {
             velY = -velY;
         }
-        
         else if(object != NULL)
         {
             removeGWindow(window, detectCollision(window, ball));
+            points++;
             velY = -velY;
             counter++;
             continue;
         }
         
-
-
-        
-        
         counter++;
-        
-        
-        
-        
         
     }
 
@@ -168,11 +175,9 @@ int main(void)
 /**
  * Initializes window with a grid of bricks.
  */
-void initBricks(GWindow window)
+void initBricks(GWindow myWindow)
 {
     // WORKS!!!!
-    
-    // Use GRect with nested for loop to print the bricks to the screen
     
     //Trial and error initial x,y values for the first brick
     int xcounter = 5;
@@ -185,9 +190,8 @@ void initBricks(GWindow window)
         //for(int j=xcounter; j<(WIDTH-COLS*BRSPACING); j+=brickWidth)
         for(int j=0; j<(WIDTH-COLS*BRSPACING); j+=brickWidth)
         {
-            
             GRect myBrick = newGRect(j+xcounter,i+ycounter, brickWidth, brickHeight);
-            add(window, myBrick);
+            add(myWindow, myBrick);
             setColor(myBrick, "red");
             setFilled(myBrick, true);
             xcounter += 5;
@@ -197,35 +201,33 @@ void initBricks(GWindow window)
         
     }
     
-    
 }
 
 /**
  * Instantiates ball in center of window.  Returns ball.
  */
-GOval initBall(GWindow window)
+GOval initBall(GWindow myWindow)
 {
     // WORKS!!!!
      
     GOval myCircle = newGOval(WIDTH/2, HEIGHT/2, 2*RADIUS, 2*RADIUS);
-    add(window, myCircle);
+    add(myWindow, myCircle);
     setColor(myCircle, "Black");
     setFilled(myCircle, true);
-   // pause(1000);
     
     return myCircle;
-   
-   
+
 }
 
+ 
 /**
  * Instantiates paddle in bottom-middle of window.
  */
-GRect initPaddle(GWindow window)
+GRect initPaddle(GWindow myWindow)
 {
     //WORKS!!!!
     GRect myPaddle = newGRect((WIDTH/2)-(PWIDTH/2), HEIGHT-PHEIGHT-20, PWIDTH, PHEIGHT);
-    add(window, myPaddle);
+    add(myWindow, myPaddle);
     setColor(myPaddle, "BLACK");
     setFilled(myPaddle, true);
    
@@ -236,26 +238,32 @@ GRect initPaddle(GWindow window)
 /**
  * Instantiates, configures, and returns label for scoreboard.
  */
-GLabel initScoreboard(GWindow window)
+GLabel initScoreboard(GWindow myWindow)
 {
-    // TODO
-    return NULL;
+    GLabel label = newGLabel("");
+    setFont(label, "SansSerif-36");
+    add(myWindow, label);
+    
+    //setLocation(label, WIDTH/2, HEIGHT/2);
+   // setLabel(label, "t");
+    
+    return label;
 }
 
 /**
  * Updates scoreboard's label, keeping it centered in window.
  */
-void updateScoreboard(GWindow window, GLabel label, int points)
+void updateScoreboard(GWindow myWindow, GLabel myLabel, int myPoints)
 {
     // update label
     char s[12];
-    sprintf(s, "%i", points);
-    setLabel(label, s);
+    sprintf(s, "%i", myPoints);
+    setLabel(myLabel, s);
 
     // center label in window
-    double x = (getWidth(window) - getWidth(label)) / 2;
-    double y = (getHeight(window) - getHeight(label)) / 2;
-    setLocation(label, x, y);
+    double x = (getWidth(myWindow) - getWidth(myLabel)) / 2;
+    double y = (getHeight(myWindow) - getHeight(myLabel)) / 2;
+    setLocation(myLabel, x, y);
 }
 
 /**
@@ -264,38 +272,38 @@ void updateScoreboard(GWindow window, GLabel label, int points)
  * outside the ball's GOval, and so the ball can't collide with
  * itself).  Returns object if so, else NULL.
  */
-GObject detectCollision(GWindow window, GOval ball)
+GObject detectCollision(GWindow myWindow, GOval myBall)
 {
     // ball's location
-    double x = getX(ball);
-    double y = getY(ball);
+    double x = getX(myBall);
+    double y = getY(myBall);
 
     // for checking for collisions
     GObject object;
 
     // check for collision at ball's top-left corner
-    object = getGObjectAt(window, x, y);
+    object = getGObjectAt(myWindow, x, y);
     if (object != NULL)
     {
         return object;
     }
 
     // check for collision at ball's top-right corner
-    object = getGObjectAt(window, x + 2 * RADIUS, y);
+    object = getGObjectAt(myWindow, x + 2 * RADIUS, y);
     if (object != NULL)
     {
         return object;
     }
 
     // check for collision at ball's bottom-left corner
-    object = getGObjectAt(window, x, y + 2 * RADIUS);
+    object = getGObjectAt(myWindow, x, y + 2 * RADIUS);
     if (object != NULL)
     {
         return object;
     }
 
     // check for collision at ball's bottom-right corner
-    object = getGObjectAt(window, x + 2 * RADIUS, y + 2 * RADIUS);
+    object = getGObjectAt(myWindow, x + 2 * RADIUS, y + 2 * RADIUS);
     if (object != NULL)
     {
         return object;
